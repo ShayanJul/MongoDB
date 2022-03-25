@@ -1,0 +1,21 @@
+use('contactData')
+db.contacts.aggregate(
+    [
+        {$match: {gender: 'female'}},
+        {$project: {
+            _id: 0,
+            name: {$concat: ['$name.first', ' ', '$name.last']},
+            gender: 1,
+            age: '$dob.age',
+            location: {type: 'Point',
+        coordinates: [
+        {$convert: {input: '$location.coordinates.longitude', to: "double"}},
+            {$convert: {input: '$location.coordinates.latitude', to: "double"}}
+             ]}
+        }},
+        {$sort: {age: -1}},
+        {$skip: 10},
+        {$limit: 300},
+        {$out: 'transformed'}
+    ]
+) 

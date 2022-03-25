@@ -1,0 +1,11 @@
+use('contactData')
+db.transformed.aggregate(
+    [
+        {$geoNear: {
+            near: {type: 'Point', coordinates: [-15.8906, 77.5641]},
+            maxDistance: 1000000,
+            query: {gender: 'female'},
+            distanceField: 'distance'
+        }}
+    ]
+)
