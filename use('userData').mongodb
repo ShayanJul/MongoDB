@@ -1,0 +1,24 @@
+use('userData')
+
+
+db.exams.aggregate(
+	[
+
+		{$unwind: '$examScores'},
+		{$group: {_id: {studentName: '$name'}, scores: {$push: '$examScores.score'}, numExams: {$sum: 1}}},
+		{$project: {
+			numExams: 1,
+			avgScore: {$round: [{$avg: '$scores'}, 2]},
+			maxScore: {$max: '$scores'},
+			minScore: {$min: '$scores'},
+		}},
+		{$project: {
+			numExams: 1,
+			avgScore: 1,
+			status: {$cond: {if: {$gte: ['$avgScore', 60]}, then: 'passed', else: 'failed'}},
+			maxScore: 1,
+			minScore: 1
+		}},
+		{$sort: {avgScore: -1}}
+	]
+).pretty()
